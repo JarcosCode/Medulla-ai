@@ -24,7 +24,7 @@ export default function LandingPage() {
         <div className="max-w-2xl mx-auto text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Your AI Music Companion</h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Get personalized music recommendations powered by AI. Try it now for free - no account needed!
+            Get personalized music recommendations powered by AI.
           </p>
           <p className="text-sm text-muted-foreground">
             Create an account to unlock unlimited recommendations and playlists.
