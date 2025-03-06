@@ -31,7 +31,7 @@ export default function AuthPage() {
   });
 
   if (user) {
-    setLocation("/");
+    setLocation("/dashboard");
     return null;
   }
 
@@ -40,7 +40,7 @@ export default function AuthPage() {
       <div className="flex items-center justify-center p-8">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Welcome to MusicAI</CardTitle>
+            <CardTitle>Welcome to Medulla.AI</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
