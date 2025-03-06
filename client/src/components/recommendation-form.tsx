@@ -53,7 +53,7 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
           className="flex-1"
         >
           <Music className="mr-2 h-4 w-4" />
-          Songs ({limits?.songRecsCount || 0}/{maxSongs})
+          Songs
         </Button>
         <Button
           variant={type === "playlists" ? "default" : "outline"}
@@ -61,7 +61,7 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
           className="flex-1"
         >
           <PlaySquare className="mr-2 h-4 w-4" />
-          Playlists ({limits?.playlistRecsCount || 0}/{maxPlaylists})
+          Playlists
         </Button>
       </div>
 
