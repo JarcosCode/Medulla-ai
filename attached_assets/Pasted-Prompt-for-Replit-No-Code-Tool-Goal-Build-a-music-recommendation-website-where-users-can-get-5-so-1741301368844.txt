@@ -1,0 +1,50 @@
+Prompt for Replit No-Code Tool
+Goal:
+Build a music recommendation website where users can get 5 song recommendations and 3 playlist recommendations per day. After exceeding these limits, they will need to create an account. Additionally, display a pop-up showing the most played song on YouTube from trending categories (hip-hop, pop, and rock).
+
+Step 1: User Interaction and Daily Limit Setup
+Create Music Preferences Input:
+
+Add a text input field where users can type their music preferences (e.g., "I want a chill 90s hip-hop playlist").
+Add a "Get Recommendations" button that triggers the AI to generate song/playlist recommendations.
+Track Usage for Unregistered Users:
+
+Create a database (e.g., Supabase) to store daily usage (song and playlist limits).
+Set a limit of 5 song recommendations and 3 playlist recommendations per day per unregistered user.
+Once the user exceeds the limit, show a message: "You've reached your daily limit. Please create an account to continue."
+Step 2: AI Integration (Using OpenAI API)
+Integrate OpenAI API to generate playlist and song recommendations based on the user’s input.
+Send user’s music preferences (e.g., "chill 90s hip-hop") to the OpenAI API.
+Parse the response into song lists (with links to YouTube, Apple Music, and Spotify) and playlist recommendations.
+Step 3: Authentication and Database Management
+Add User Authentication (Supabase or another authentication service):
+
+Allow users to sign up and log in using their email/password or OAuth (Google/Facebook).
+Store user data (e.g., song and playlist usage limits).
+Registered users can get unlimited recommendations or higher daily limits.
+Track User’s Song and Playlist Recommendations:
+
+For each user (both registered and unregistered), store the number of song and playlist recommendations they’ve used that day.
+Reset the counts at the beginning of each day.
+Step 4: Display Recommendations and Links
+Show Recommendations:
+Once the AI generates a playlist or song, display the list with links to YouTube, Apple Music, and Spotify.
+Sign-Up Prompt:
+After exceeding the free recommendation limit, show a prompt with a button to create an account.
+After successful registration, reset their limits and allow unlimited access (or higher limits).
+Step 5: Save Playlists for Registered Users
+Allow Registered Users to Save Playlists:
+After generating a playlist, allow logged-in users to save it to their profile.
+Display a “Saved Playlists” section in their profile page.
+Step 6: Trending Song Pop-Up
+Use YouTube API (YouTube Data API v3) to fetch the most played songs from YouTube trending in the hip-hop, pop, and rock categories.
+
+Use the videos.list endpoint to fetch the top trending videos in these genres.
+Filter by category IDs (e.g., Hip-Hop, Pop, Rock).
+Display Pop-Up with Trending Song:
+
+Show a pop-up or modal with the current most-played song and a link to the YouTube video.
+The pop-up should display:
+The song name and artist.
+A YouTube thumbnail and a link to the YouTube video.
+Example: “Trending Now: ‘[Song Name]’ by [Artist Name]! [Watch on YouTube]”. 
