@@ -3,10 +3,11 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Music, PlaySquare } from "lucide-react";
+import { Loader2, Music, PlaySquare, ThumbsUp } from "lucide-react";
 
 type RecommendationFormProps = {
   limits?: {
@@ -54,9 +55,6 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
     },
   });
 
-  const maxSongs = 5;
-  const maxPlaylists = 3;
-
   return (
     <div className="space-y-6">
       <div className="flex gap-4">
@@ -85,7 +83,7 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
         className="space-y-4"
       >
         <Input
-          placeholder="Describe your music preferences (e.g., chill 90s hip-hop)"
+          placeholder="Describe your music preferences (e.g., chill 90s hip-hop with jazzy elements)"
           {...form.register("preferences")}
         />
         <Button
@@ -105,11 +103,39 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
           {recommendationMutation.data.recommendations.map((rec, index) => (
             <Card key={index}>
               <CardContent className="p-4">
-                <h3 className="font-semibold">{rec.name}</h3>
-                {rec.artist && <p className="text-sm text-muted-foreground">{rec.artist}</p>}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{rec.name}</h3>
+                    {rec.artist && <p className="text-sm text-muted-foreground">{rec.artist}</p>}
+                  </div>
+                  {rec.confidence_score && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <ThumbsUp className="h-4 w-4" />
+                      {Math.round(rec.confidence_score * 100)}%
+                    </div>
+                  )}
+                </div>
+
                 {rec.description && (
                   <p className="text-sm mt-2">{rec.description}</p>
                 )}
+
+                {rec.genres && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {rec.genres.map((genre) => (
+                      <Badge key={genre} variant="secondary">
+                        {genre}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                {rec.mood && (
+                  <Badge className="mt-2" variant="outline">
+                    {rec.mood}
+                  </Badge>
+                )}
+
                 <div className="flex gap-2 mt-4">
                   {rec.youtubeUrl && isValidUrl(rec.youtubeUrl) && (
                     <Button size="sm" variant="outline" asChild>
