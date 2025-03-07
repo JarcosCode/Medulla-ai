@@ -43,6 +43,8 @@ export async function searchSpotify(query: string, type: 'track' | 'playlist'): 
 } | null> {
   try {
     const token = await getAccessToken();
+    console.log('Searching Spotify for:', query, 'type:', type);
+
     const response = await fetch(
       `${spotifyApiBaseUrl}/search?q=${encodeURIComponent(query)}&type=${type}&limit=1`,
       {
@@ -57,6 +59,8 @@ export async function searchSpotify(query: string, type: 'track' | 'playlist'): 
     }
 
     const data = await response.json();
+    console.log('Spotify search response:', data);
+
     const items = type === 'track' ? data.tracks.items : data.playlists.items;
 
     if (!items || items.length === 0) {
