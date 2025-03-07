@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 import { searchYouTube } from "./youtube";
-
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { searchSpotify } from "./spotify";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
 export async function getMusicRecommendations(preferences: string, type: 'songs' | 'playlists'): Promise<{
@@ -10,6 +9,7 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
     artist?: string;
     description?: string;
     youtubeUrl?: string;
+    spotifyUrl?: string;
   }>;
 }> {
   try {
@@ -60,18 +60,25 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
 
     const result = JSON.parse(response.choices[0].message.content);
 
-    // Add real YouTube URLs to the recommendations
+    // Add real YouTube and Spotify URLs to the recommendations
     const recommendationsWithLinks = await Promise.all(
       result.recommendations.map(async (rec) => {
         const searchQuery = type === 'songs' 
-          ? `${rec.name} ${rec.artist} official music video`
-          : `${rec.name} music playlist`;
+          ? `${rec.name} ${rec.artist}`
+          : rec.name;
 
-        const youtubeResult = await searchYouTube(searchQuery, type === 'songs' ? 'video' : 'playlist');
+        const [youtubeResult, spotifyResult] = await Promise.all([
+          searchYouTube(
+            type === 'songs' ? `${searchQuery} official music video` : `${searchQuery} music playlist`,
+            type === 'songs' ? 'video' : 'playlist'
+          ),
+          searchSpotify(searchQuery, type === 'songs' ? 'track' : 'playlist')
+        ]);
 
         return {
           ...rec,
-          youtubeUrl: youtubeResult?.url
+          youtubeUrl: youtubeResult?.url,
+          spotifyUrl: spotifyResult?.url
         };
       })
     );

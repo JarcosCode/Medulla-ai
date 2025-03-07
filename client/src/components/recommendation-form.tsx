@@ -118,6 +118,13 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
                       </a>
                     </Button>
                   )}
+                  {rec.spotifyUrl && isValidUrl(rec.spotifyUrl) && (
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={rec.spotifyUrl} target="_blank" rel="noopener noreferrer">
+                        Open in Spotify
+                      </a>
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
