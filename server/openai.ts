@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { searchYouTube } from "./youtube";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -20,40 +21,28 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
          - Song name (required)
          - Artist name (required)
          - A brief description (required)
-         - Links to music platforms (IMPORTANT: include at least YouTube links):
-           * YouTube: "https://www.youtube.com/watch?v={video_id}" for official music video
-           * Spotify: "https://open.spotify.com/track/{track_id}" for the song
-           * Apple Music: "https://music.apple.com/album/{album_id}/song/{song_id}" for the song
 
-         Note: ALWAYS include YouTube links for songs. For Spotify and Apple Music, include if available.
+         Important: Do not include any URLs, they will be added later.
+         Focus on providing accurate song and artist information.
 
          Respond with JSON in this format: 
          { "recommendations": [{ 
            "name": string, 
            "artist": string, 
-           "description": string,
-           "youtubeUrl": string,
-           "spotifyUrl"?: string,
-           "appleMusicUrl"?: string
+           "description": string
          }] }`
       : `You are a music recommendation expert. Suggest themed playlists based on the user's preferences.
          For each playlist suggestion, include:
          - Playlist name (required)
          - A description of the playlist theme and mood (required)
-         - Links to playlists (IMPORTANT: include at least YouTube links):
-           * YouTube: "https://www.youtube.com/playlist?list={playlist_id}" for existing playlists
-           * Spotify: "https://open.spotify.com/playlist/{playlist_id}" for existing playlists
-           * Apple Music: "https://music.apple.com/playlist/{playlist_id}" for existing playlists
 
-         Note: ALWAYS include YouTube playlist links. For Spotify and Apple Music, include if available.
+         Important: Do not include any URLs, they will be added later.
+         Focus on providing good playlist suggestions with detailed descriptions.
 
          Respond with JSON in this format: 
          { "recommendations": [{ 
            "name": string, 
-           "description": string,
-           "youtubeUrl": string,
-           "spotifyUrl"?: string,
-           "appleMusicUrl"?: string
+           "description": string
          }] }`;
 
     const response = await openai.chat.completions.create({
@@ -72,8 +61,25 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
     });
 
     const result = JSON.parse(response.choices[0].message.content);
-    console.log('OpenAI Response:', result);
-    return result;
+
+    // Add real YouTube URLs to the recommendations
+    const recommendationsWithLinks = await Promise.all(
+      result.recommendations.map(async (rec) => {
+        const searchQuery = type === 'songs' 
+          ? `${rec.name} ${rec.artist} official music video`
+          : `${rec.name} music playlist`;
+
+        const youtubeResult = await searchYouTube(searchQuery, type === 'songs' ? 'video' : 'playlist');
+
+        return {
+          ...rec,
+          youtubeUrl: youtubeResult?.url
+        };
+      })
+    );
+
+    console.log('Final recommendations:', { recommendations: recommendationsWithLinks });
+    return { recommendations: recommendationsWithLinks };
   } catch (error) {
     throw new Error(`Failed to get recommendations: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
