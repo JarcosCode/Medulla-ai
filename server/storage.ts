@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pkg from 'pg';
 const { Pool } = pkg;
 import type { IStorage } from "./types";
-import { users, dailyLimits, type User, type InsertUser, type DailyLimit } from "@shared/schema";
+import { users, dailyLimits, savedPlaylists, type User, type InsertUser, type DailyLimit, type SavedPlaylist, type InsertPlaylist } from "@shared/schema";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
@@ -108,6 +108,34 @@ export class DatabaseStorage implements IStorage {
         })
         .where(eq(dailyLimits.id, existing[0].id));
     }
+  }
+
+  // New methods for saved playlists
+  async getSavedPlaylists(userId: number): Promise<SavedPlaylist[]> {
+    return await db
+      .select()
+      .from(savedPlaylists)
+      .where(eq(savedPlaylists.userId, userId))
+      .orderBy(savedPlaylists.createdAt);
+  }
+
+  async savePlaylist(userId: number, playlist: InsertPlaylist): Promise<SavedPlaylist> {
+    const result = await db
+      .insert(savedPlaylists)
+      .values({ ...playlist, userId })
+      .returning();
+    return result[0];
+  }
+
+  async deleteSavedPlaylist(userId: number, playlistId: number): Promise<void> {
+    await db
+      .delete(savedPlaylists)
+      .where(
+        and(
+          eq(savedPlaylists.id, playlistId),
+          eq(savedPlaylists.userId, userId)
+        )
+      );
   }
 }
 

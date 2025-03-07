@@ -18,12 +18,35 @@ export const dailyLimits = pgTable("daily_limits", {
   date: timestamp("date").notNull(),
 });
 
+export const savedPlaylists = pgTable("saved_playlists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  genres: text("genres").array(),
+  mood: text("mood"),
+  youtubeUrl: text("youtube_url"),
+  spotifyUrl: text("spotify_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   displayName: true,
   password: true,
 });
 
+export const insertPlaylistSchema = createInsertSchema(savedPlaylists).pick({
+  name: true,
+  description: true,
+  genres: true,
+  mood: true,
+  youtubeUrl: true,
+  spotifyUrl: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type DailyLimit = typeof dailyLimits.$inferSelect;
+export type SavedPlaylist = typeof savedPlaylists.$inferSelect;
+export type InsertPlaylist = z.infer<typeof insertPlaylistSchema>;

@@ -8,6 +8,8 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Music, PlaySquare, ThumbsUp } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { BookmarkPlus } from "lucide-react";
 
 type RecommendationFormProps = {
   limits?: {
@@ -29,6 +31,7 @@ function isValidUrl(url: string | undefined): boolean {
 
 export default function RecommendationForm({ limits }: RecommendationFormProps) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [type, setType] = useState<"songs" | "playlists">("songs");
   const form = useForm({
     defaultValues: {
@@ -49,6 +52,27 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
     onError: (error: Error) => {
       toast({
         title: "Error getting recommendations",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async (playlist: any) => {
+      const res = await apiRequest("POST", "/api/playlists", playlist);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/playlists"] });
+      toast({
+        title: "Playlist saved",
+        description: "The playlist has been added to your saved items.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to save playlist",
         description: error.message,
         variant: "destructive",
       });
@@ -108,12 +132,24 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
                     <h3 className="font-semibold">{rec.name}</h3>
                     {rec.artist && <p className="text-sm text-muted-foreground">{rec.artist}</p>}
                   </div>
-                  {rec.confidence_score && (
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <ThumbsUp className="h-4 w-4" />
-                      {Math.round(rec.confidence_score * 100)}%
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {rec.confidence_score && (
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <ThumbsUp className="h-4 w-4" />
+                        {Math.round(rec.confidence_score * 100)}%
+                      </div>
+                    )}
+                    {type === "playlists" && user && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => saveMutation.mutate(rec)}
+                        disabled={saveMutation.isPending}
+                      >
+                        <BookmarkPlus className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
                 {rec.description && (

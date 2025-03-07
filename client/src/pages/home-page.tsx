@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import RecommendationForm from "@/components/recommendation-form";
 import TrendingSongs from "@/components/trending-songs";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
+import { BookmarkIcon } from "lucide-react";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -17,6 +19,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">MusicAI</h1>
           <div className="flex items-center gap-4">
+            <Button variant="ghost" asChild>
+              <Link href="/saved-playlists">
+                <BookmarkIcon className="h-4 w-4 mr-2" />
+                Saved Playlists
+              </Link>
+            </Button>
             <span className="text-sm text-muted-foreground">
               Welcome, {user?.username}
             </span>

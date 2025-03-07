@@ -19,7 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const trending = await getTrendingVideos();
       res.json(trending);
-    } catch (error) {
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
@@ -48,7 +48,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.incrementDailyLimits(sessionId, userId, type);
 
       res.json(recommendations);
-    } catch (error) {
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // New routes for saved playlists
+  app.get("/api/playlists", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const playlists = await storage.getSavedPlaylists(req.user!.id);
+      res.json(playlists);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/playlists", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const playlist = await storage.savePlaylist(req.user!.id, req.body);
+      res.status(201).json(playlist);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/playlists/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      await storage.deleteSavedPlaylist(req.user!.id, parseInt(req.params.id));
+      res.sendStatus(204);
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });

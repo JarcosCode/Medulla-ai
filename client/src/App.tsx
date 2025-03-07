@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
 import LandingPage from "@/pages/landing-page";
+import SavedPlaylistsPage from "@/pages/saved-playlists";
 import { ProtectedRoute } from "./lib/protected-route";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <ProtectedRoute path="/dashboard" component={HomePage} />
+      <ProtectedRoute path="/saved-playlists" component={SavedPlaylistsPage} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>
