@@ -15,6 +15,16 @@ type RecommendationFormProps = {
   };
 };
 
+function isValidUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && parsed.host.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export default function RecommendationForm({ limits }: RecommendationFormProps) {
   const { toast } = useToast();
   const [type, setType] = useState<"songs" | "playlists">("songs");
@@ -98,21 +108,21 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
                   <p className="text-sm mt-2">{rec.description}</p>
                 )}
                 <div className="flex gap-2 mt-4">
-                  {rec.youtubeUrl && (
+                  {isValidUrl(rec.youtubeUrl) && (
                     <Button size="sm" variant="outline" asChild>
                       <a href={rec.youtubeUrl} target="_blank" rel="noopener noreferrer">
                         YouTube
                       </a>
                     </Button>
                   )}
-                  {rec.spotifyUrl && (
+                  {isValidUrl(rec.spotifyUrl) && (
                     <Button size="sm" variant="outline" asChild>
                       <a href={rec.spotifyUrl} target="_blank" rel="noopener noreferrer">
                         Spotify
                       </a>
                     </Button>
                   )}
-                  {rec.appleMusicUrl && (
+                  {isValidUrl(rec.appleMusicUrl) && (
                     <Button size="sm" variant="outline" asChild>
                       <a href={rec.appleMusicUrl} target="_blank" rel="noopener noreferrer">
                         Apple Music
