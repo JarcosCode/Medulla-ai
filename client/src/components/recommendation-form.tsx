@@ -21,6 +21,7 @@ function isValidUrl(url: string | undefined): boolean {
     const parsed = new URL(url);
     return parsed.protocol === 'https:' && parsed.host.length > 0;
   } catch {
+    console.log('Invalid URL:', url);
     return false;
   }
 }
@@ -37,7 +38,9 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
   const recommendationMutation = useMutation({
     mutationFn: async (data: { preferences: string; type: "songs" | "playlists" }) => {
       const res = await apiRequest("POST", "/api/recommendations", data);
-      return res.json();
+      const result = await res.json();
+      console.log('API Response:', result);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/daily-limits"] });
@@ -108,21 +111,21 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
                   <p className="text-sm mt-2">{rec.description}</p>
                 )}
                 <div className="flex gap-2 mt-4">
-                  {isValidUrl(rec.youtubeUrl) && (
+                  {rec.youtubeUrl && isValidUrl(rec.youtubeUrl) && (
                     <Button size="sm" variant="outline" asChild>
                       <a href={rec.youtubeUrl} target="_blank" rel="noopener noreferrer">
                         YouTube
                       </a>
                     </Button>
                   )}
-                  {isValidUrl(rec.spotifyUrl) && (
+                  {rec.spotifyUrl && isValidUrl(rec.spotifyUrl) && (
                     <Button size="sm" variant="outline" asChild>
                       <a href={rec.spotifyUrl} target="_blank" rel="noopener noreferrer">
                         Spotify
                       </a>
                     </Button>
                   )}
-                  {isValidUrl(rec.appleMusicUrl) && (
+                  {rec.appleMusicUrl && isValidUrl(rec.appleMusicUrl) && (
                     <Button size="sm" variant="outline" asChild>
                       <a href={rec.appleMusicUrl} target="_blank" rel="noopener noreferrer">
                         Apple Music
