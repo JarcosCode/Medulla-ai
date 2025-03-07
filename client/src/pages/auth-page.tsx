@@ -77,8 +77,8 @@ export default function AuthPage() {
                       <Input id="register-email" type="email" {...registerForm.register("username")} />
                     </div>
                     <div>
-                      <Label htmlFor="register-displayName">Display Name</Label>
-                      <Input id="register-displayName" {...registerForm.register("displayName")} />
+                      <Label htmlFor="register-username">Username</Label>
+                      <Input id="register-username" {...registerForm.register("displayName")} />
                     </div>
                     <div>
                       <Label htmlFor="register-password">Password</Label>
