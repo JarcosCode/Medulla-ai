@@ -23,7 +23,7 @@ export default function LandingPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Your AI Music Companion</h2>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-muted-foreground mb-4">
             Get personalized music recommendations powered by AI.
           </p>
           <p className="text-sm text-muted-foreground">
