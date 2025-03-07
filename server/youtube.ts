@@ -15,7 +15,7 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
   try {
     // Get trending music videos
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&videoCategoryId=10&maxResults=3&regionCode=US&key=${API_KEY}`
+      `https://www.googleapis.com/youtube/v3/videos?part=snippet,status&chart=mostPopular&videoCategoryId=10&maxResults=3&regionCode=US&key=${API_KEY}`
     );
 
     if (!response.ok) {
@@ -25,16 +25,25 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
     const data = await response.json();
     const results: Record<string, YouTubeVideo> = {};
 
-    // Map the videos to our categories
-    data.items.forEach((video: any, index: number) => {
+    // Map the videos to our categories, filtering out any private or deleted videos
+    let validVideoCount = 0;
+    for (const video of data.items) {
+      // Skip private or deleted videos
+      if (video.status?.privacyStatus !== "public") {
+        continue;
+      }
+
       const categories = ["Trending #1", "Trending #2", "Trending #3"];
-      results[categories[index]] = {
-        id: video.id,
-        title: video.snippet.title,
-        channelTitle: video.snippet.channelTitle,
-        url: `https://youtube.com/watch?v=${video.id}`,
-      };
-    });
+      if (validVideoCount < categories.length) {
+        results[categories[validVideoCount]] = {
+          id: video.id,
+          title: video.snippet.title,
+          channelTitle: video.snippet.channelTitle,
+          url: `https://youtube.com/watch?v=${video.id}`,
+        };
+        validVideoCount++;
+      }
+    }
 
     return results;
   } catch (error) {
