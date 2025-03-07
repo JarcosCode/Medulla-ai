@@ -7,7 +7,7 @@ import { Music2 } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b" role="banner">
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -20,7 +20,7 @@ export default function LandingPage() {
         </nav>
       </header>
 
-      <main className="container mx-auto px-4 py-8" role="main">
+      <main className="container mx-auto px-4 py-8 flex-1" role="main">
         <section className="max-w-2xl mx-auto text-center mb-8">
           <h2 className="text-4xl font-bold mb-2">Your AI Music Companion</h2>
           <p className="text-lg text-muted-foreground mb-2">
@@ -45,9 +45,9 @@ export default function LandingPage() {
         </div>
       </main>
 
-      <footer className="mt-auto py-8 border-t" role="contentinfo">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>Powered by AI to help you discover your next favorite song.</p>
+      <footer className="bg-black text-white py-4 w-full mt-auto">
+        <div className="container mx-auto px-4 text-center">
+          <p>Contact us: <a href="mailto:Demarco@foodHost.us" className="hover:underline">Demarco@foodHost.us</a></p>
         </div>
       </footer>
     </div>

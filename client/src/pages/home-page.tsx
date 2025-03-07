@@ -14,7 +14,7 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">MusicAI</h1>
@@ -40,7 +40,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
         <div className="grid gap-8 md:grid-cols-[2fr,1fr]">
           <div className="space-y-8">
             <section>
@@ -54,6 +54,12 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+
+      <footer className="bg-black text-white py-4 w-full mt-auto">
+        <div className="container mx-auto px-4 text-center">
+          <p>Contact us: <a href="mailto:Demarco@foodHost.us" className="hover:underline">Demarco@foodHost.us</a></p>
+        </div>
+      </footer>
     </div>
   );
 }

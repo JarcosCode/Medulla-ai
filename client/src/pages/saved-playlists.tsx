@@ -45,7 +45,7 @@ export default function SavedPlaylistsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export default function SavedPlaylistsPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
         {playlists?.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center">
@@ -134,6 +134,12 @@ export default function SavedPlaylistsPage() {
           </div>
         )}
       </main>
+
+      <footer className="bg-black text-white py-4 w-full mt-auto">
+        <div className="container mx-auto px-4 text-center">
+          <p>Contact us: <a href="mailto:Demarco@foodHost.us" className="hover:underline">Demarco@foodHost.us</a></p>
+        </div>
+      </footer>
     </div>
   );
 }
