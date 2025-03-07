@@ -10,8 +10,6 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
     artist?: string;
     description?: string;
     youtubeUrl?: string;
-    spotifyUrl?: string;
-    appleMusicUrl?: string;
   }>;
 }> {
   try {
