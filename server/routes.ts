@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { getMusicRecommendations } from "./openai";
+import { getTrendingVideos } from "./youtube";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -12,6 +13,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userId = req.user?.id;
     const limits = await storage.getDailyLimits(sessionId, userId);
     res.json(limits);
+  });
+
+  app.get("/api/trending", async (_req, res) => {
+    try {
+      const trending = await getTrendingVideos();
+      res.json(trending);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   });
 
   app.post("/api/recommendations", async (req, res) => {
@@ -34,9 +44,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const recommendations = await getMusicRecommendations(preferences, type);
-      
+
       await storage.incrementDailyLimits(sessionId, userId, type);
-      
+
       res.json(recommendations);
     } catch (error) {
       res.status(500).json({ message: error.message });
