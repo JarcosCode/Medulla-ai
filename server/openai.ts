@@ -15,8 +15,29 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
 }> {
   try {
     const systemPrompt = type === 'songs' 
-      ? `You are a music recommendation expert. Suggest individual songs based on the user's preferences. Each song should include artist name and links to music platforms. Respond with JSON in this format: { "recommendations": [{ "name": string, "artist": string, "description": string, "youtubeUrl": string, "spotifyUrl": string, "appleMusicUrl": string }] }`
-      : `You are a music recommendation expert. Suggest themed playlists based on the user's preferences. Each playlist should have a descriptive name and theme. Respond with JSON in this format: { "recommendations": [{ "name": string, "description": string, "youtubeUrl": string, "spotifyUrl": string, "appleMusicUrl": string }] }`;
+      ? `You are a music recommendation expert. Suggest individual songs based on the user's preferences. 
+         For each song, include:
+         - Song name
+         - Artist name
+         - A brief description
+         - YouTube URL in format: https://www.youtube.com/watch?v={video_id} (use real video IDs)
+         - Spotify URL in format: https://open.spotify.com/track/{track_id}
+         - Apple Music URL in format: https://music.apple.com/us/album/{album_name}/{track_name}/{id}
+
+         Respond with JSON in this format: { "recommendations": [{ "name": string, "artist": string, "description": string, "youtubeUrl": string, "spotifyUrl": string, "appleMusicUrl": string }] }
+
+         Important: Only include URLs if you are certain they are valid and working links.`
+      : `You are a music recommendation expert. Suggest themed playlists based on the user's preferences.
+         For each playlist, include:
+         - Playlist name
+         - A description of the playlist theme and mood
+         - YouTube URL in format: https://www.youtube.com/playlist?list={playlist_id} (use real playlist IDs)
+         - Spotify URL in format: https://open.spotify.com/playlist/{playlist_id}
+         - Apple Music URL in format: https://music.apple.com/us/playlist/{playlist_name}/{id}
+
+         Respond with JSON in this format: { "recommendations": [{ "name": string, "description": string, "youtubeUrl": string, "spotifyUrl": string, "appleMusicUrl": string }] }
+
+         Important: Only include URLs if you are certain they are valid and working links.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -35,6 +56,6 @@ export async function getMusicRecommendations(preferences: string, type: 'songs'
 
     return JSON.parse(response.choices[0].message.content);
   } catch (error) {
-    throw new Error(`Failed to get recommendations: ${error.message}`);
+    throw new Error(`Failed to get recommendations: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
