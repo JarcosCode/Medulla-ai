@@ -137,7 +137,7 @@ export default function SavedPlaylistsPage() {
 
       <footer className="bg-black text-white py-4 w-full mt-auto">
         <div className="container mx-auto px-4 text-center">
-          <p>Contact us: <a href="mailto:Demarco@foodHost.us" className="hover:underline">Demarco@foodHost.us</a></p>
+          <p>Feel free to reach out to us, email us at: <a href="mailto:Demarco@foodHost.us" className="hover:underline">Demarco@foodHost.us</a></p>
         </div>
       </footer>
     </div>
