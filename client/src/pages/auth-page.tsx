@@ -26,6 +26,7 @@ export default function AuthPage() {
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
       username: "",
+      displayName: "",
       password: "",
     },
   });
@@ -46,7 +47,7 @@ export default function AuthPage() {
             <Tabs defaultValue="login">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">
@@ -68,12 +69,16 @@ export default function AuthPage() {
                 </form>
               </TabsContent>
 
-              <TabsContent value="register">
+              <TabsContent value="signup">
                 <form onSubmit={registerForm.handleSubmit((data) => registerMutation.mutate(data))}>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="register-username">Username</Label>
-                      <Input id="register-username" {...registerForm.register("username")} />
+                      <Label htmlFor="register-email">Email</Label>
+                      <Input id="register-email" type="email" {...registerForm.register("username")} />
+                    </div>
+                    <div>
+                      <Label htmlFor="register-displayName">Display Name</Label>
+                      <Input id="register-displayName" {...registerForm.register("displayName")} />
                     </div>
                     <div>
                       <Label htmlFor="register-password">Password</Label>
@@ -81,7 +86,7 @@ export default function AuthPage() {
                     </div>
                     <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
                       {registerMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Register
+                      Sign Up
                     </Button>
                   </div>
                 </form>

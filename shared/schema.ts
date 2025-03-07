@@ -5,6 +5,7 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
+  displayName: text("display_name"),
   password: text("password").notNull(),
 });
 
@@ -19,6 +20,7 @@ export const dailyLimits = pgTable("daily_limits", {
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  displayName: true,
   password: true,
 });
 
