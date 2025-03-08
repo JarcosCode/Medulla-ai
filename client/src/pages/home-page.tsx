@@ -14,8 +14,8 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#111827] to-[#1f2937]">
+      <header className="border-b border-white/10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">MusicAI</h1>
           <div className="flex items-center gap-4">
@@ -55,7 +55,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="bg-black text-white py-4 w-full mt-auto">
+      <footer className="bg-black text-white py-4 w-full">
         <div className="container mx-auto px-4 text-center">
           <p>Feel free to reach out to us, email us at: <a href="mailto:Demarco@foodHost.us" className="hover:underline">Demarco@foodHost.us</a></p>
         </div>
