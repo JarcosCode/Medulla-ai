@@ -9,6 +9,14 @@ const youtubeVideoSchema = z.object({
 
 type YouTubeVideo = z.infer<typeof youtubeVideoSchema>;
 
+// Cache implementation
+let trendingCache: {
+  data: Record<string, YouTubeVideo>;
+  lastUpdated: number;
+} | null = null;
+
+const CACHE_DURATION = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
 async function searchYouTube(query: string, type: 'video' | 'playlist'): Promise<{
   id: string;
   title: string;
@@ -50,9 +58,16 @@ async function searchYouTube(query: string, type: 'video' | 'playlist'): Promise
 }
 
 export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>> {
+  // Check if we have valid cached data
+  if (trendingCache && (Date.now() - trendingCache.lastUpdated) < CACHE_DURATION) {
+    console.log('Returning cached trending videos');
+    return trendingCache.data;
+  }
+
   const API_KEY = process.env.YOUTUBE_API_KEY;
 
   try {
+    console.log('Fetching fresh trending videos from YouTube API');
     // Get trending music videos
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/videos?part=snippet,status&chart=mostPopular&videoCategoryId=10&maxResults=3&regionCode=US&key=${API_KEY}`
@@ -85,9 +100,20 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
       }
     }
 
+    // Update cache
+    trendingCache = {
+      data: results,
+      lastUpdated: Date.now()
+    };
+
     return results;
   } catch (error) {
     console.error("Error fetching trending videos:", error);
+    // If there's an error and we have cached data, return it even if expired
+    if (trendingCache) {
+      console.log('Returning cached data due to API error');
+      return trendingCache.data;
+    }
     return {};
   }
 }
