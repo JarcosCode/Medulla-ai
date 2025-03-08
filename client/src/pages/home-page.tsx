@@ -14,8 +14,8 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#111827] to-[#1f2937]">
-      <header className="border-b border-white/10">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">MusicAI</h1>
           <div className="flex items-center gap-4">

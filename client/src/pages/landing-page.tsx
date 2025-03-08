@@ -7,8 +7,8 @@ import { Music2 } from "lucide-react";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#111827] to-[#1f2937]">
-      <header className="border-b border-white/10" role="banner">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="border-b" role="banner">
         <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Music2 className="h-6 w-6 text-primary" aria-hidden="true" />

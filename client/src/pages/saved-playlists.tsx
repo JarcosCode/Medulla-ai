@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Music2, Trash2 } from "lucide-react";
@@ -45,8 +45,8 @@ export default function SavedPlaylistsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#111827] to-[#1f2937]">
-      <header className="border-b border-white/10">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Music2 className="h-6 w-6 text-primary" />
