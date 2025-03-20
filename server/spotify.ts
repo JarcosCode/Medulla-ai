@@ -1,5 +1,28 @@
+import fetch from 'node-fetch';
+import { Buffer } from 'buffer';
+
 const spotifyApiBaseUrl = 'https://api.spotify.com/v1';
 const spotifyAccountsUrl = 'https://accounts.spotify.com/api/token';
+
+interface SpotifyTokenResponse {
+  access_token: string;
+  expires_in: number;
+}
+
+interface SpotifySearchResponse {
+  tracks?: {
+    items: Array<{
+      id: string;
+      name: string;
+    }>;
+  };
+  playlists?: {
+    items: Array<{
+      id: string;
+      name: string;
+    }>;
+  };
+}
 
 let accessToken: string | null = null;
 let tokenExpiry: number = 0;
@@ -29,7 +52,7 @@ async function getAccessToken(): Promise<string> {
     throw new Error('Failed to get Spotify access token');
   }
 
-  const data = await response.json();
+  const data = await response.json() as SpotifyTokenResponse;
   accessToken = data.access_token;
   tokenExpiry = Date.now() + (data.expires_in * 1000);
 
@@ -58,10 +81,10 @@ export async function searchSpotify(query: string, type: 'track' | 'playlist'): 
       throw new Error(`Spotify API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as SpotifySearchResponse;
     console.log('Spotify search response:', data);
 
-    const items = type === 'track' ? data.tracks.items : data.playlists.items;
+    const items = type === 'track' ? data.tracks?.items : data.playlists?.items;
 
     if (!items || items.length === 0) {
       return null;

@@ -24,19 +24,26 @@ async function searchYouTube(query: string, type: 'video' | 'playlist'): Promise
   url: string;
 } | null> {
   const API_KEY = process.env.YOUTUBE_API_KEY;
+  console.log('Searching YouTube with API key:', API_KEY ? 'Present' : 'Missing');
 
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=${type}&maxResults=1&key=${API_KEY}`
-    );
+    const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=${type}&maxResults=1&key=${API_KEY}`;
+    console.log('Making YouTube API request to:', url);
+    
+    const response = await fetch(url);
+    console.log('YouTube API response status:', response.status);
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('YouTube API error response:', errorText);
       throw new Error(`YouTube API error: ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('YouTube API response data:', JSON.stringify(data, null, 2));
 
     if (!data.items || data.items.length === 0) {
+      console.log('No results found in YouTube API response');
       return null;
     }
 
@@ -65,19 +72,25 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
   }
 
   const API_KEY = process.env.YOUTUBE_API_KEY;
+  console.log('Fetching trending videos with API key:', API_KEY ? 'Present' : 'Missing');
 
   try {
     console.log('Fetching fresh trending videos from YouTube API');
-    // Get trending music videos
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,status&chart=mostPopular&videoCategoryId=10&maxResults=3&regionCode=US&key=${API_KEY}`
-    );
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,status&chart=mostPopular&videoCategoryId=10&maxResults=3&regionCode=US&key=${API_KEY}`;
+    console.log('Making YouTube API request to:', url);
+
+    const response = await fetch(url);
+    console.log('YouTube API response status:', response.status);
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('YouTube API error response:', errorText);
       throw new Error(`YouTube API error: ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('YouTube API response data:', JSON.stringify(data, null, 2));
+
     const results: Record<string, YouTubeVideo> = {};
 
     // Map the videos to our categories, filtering out any private or deleted videos
@@ -85,6 +98,7 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
     for (const video of data.items) {
       // Skip private or deleted videos
       if (video.status?.privacyStatus !== "public") {
+        console.log('Skipping private/deleted video:', video.id);
         continue;
       }
 
@@ -99,6 +113,8 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
         validVideoCount++;
       }
     }
+
+    console.log('Processed trending videos:', results);
 
     // Update cache
     trendingCache = {

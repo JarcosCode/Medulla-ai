@@ -11,6 +11,21 @@ import { Loader2, Music, PlaySquare, ThumbsUp } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { BookmarkPlus } from "lucide-react";
 
+interface Recommendation {
+  name: string;
+  artist?: string;
+  description?: string;
+  genres?: string[];
+  mood?: string;
+  confidence_score?: number;
+  youtubeUrl?: string;
+  spotifyUrl?: string;
+}
+
+interface RecommendationResponse {
+  recommendations: Recommendation[];
+}
+
 type RecommendationFormProps = {
   limits?: {
     songRecsCount: number;
@@ -33,23 +48,77 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
   const { toast } = useToast();
   const { user } = useAuth();
   const [type, setType] = useState<"songs" | "playlists">("songs");
+  const [hasUsedFreeTrial, setHasUsedFreeTrial] = useState(() => {
+    return localStorage.getItem('hasUsedFreeTrial') === 'true';
+  });
+
   const form = useForm({
     defaultValues: {
       preferences: "",
     },
   });
 
+  const handleSubmit = (data: { preferences: string }) => {
+    if (!user && hasUsedFreeTrial) {
+      console.log("Free trial used, requiring sign in");
+      toast({
+        title: "Sign in Required",
+        description: "You've used your free trial. Please sign in to get more recommendations.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    recommendationMutation.mutate({ ...data, type });
+  };
+
   const recommendationMutation = useMutation({
-    mutationFn: async (data: { preferences: string; type: "songs" | "playlists" }) => {
-      const res = await apiRequest("POST", "/api/recommendations", data);
-      const result = await res.json();
-      console.log('API Response:', result);
-      return result;
+    mutationFn: async (data: { preferences: string; type: "songs" | "playlists" }): Promise<RecommendationResponse> => {
+      if (!user && hasUsedFreeTrial) {
+        throw new Error("You must be logged in to get more recommendations");
+      }
+
+      console.log('Making recommendation request...', {
+        data,
+        user: user?.username,
+        hasToken: !!localStorage.getItem('token'),
+        isFreeTrial: !user && !hasUsedFreeTrial
+      });
+      
+      try {
+        const res = await apiRequest("POST", "/api/recommendations", data);
+        const result = await res.json();
+        console.log('Recommendation response:', result);
+
+        // If this was a free trial, mark it as used
+        if (!user && !hasUsedFreeTrial) {
+          localStorage.setItem('hasUsedFreeTrial', 'true');
+          setHasUsedFreeTrial(true);
+        }
+
+        return result;
+      } catch (error) {
+        console.error('Recommendation request failed:', {
+          error,
+          message: error instanceof Error ? error.message : String(error),
+          status: error instanceof Error ? (error as any).status : undefined
+        });
+        throw error;
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/daily-limits"] });
+      console.log('Recommendation request successful, invalidating daily limits');
+      if (user) {
+        queryClient.invalidateQueries({ queryKey: ["/api/daily-limits"] });
+      }
     },
     onError: (error: Error) => {
+      console.error('Recommendation error:', {
+        error,
+        message: error.message,
+        name: error.name,
+        stack: error.stack
+      });
       toast({
         title: "Error getting recommendations",
         description: error.message,
@@ -59,9 +128,15 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
   });
 
   const saveMutation = useMutation({
-    mutationFn: async (playlist: any) => {
+    mutationFn: async (playlist: Recommendation) => {
+      if (!user) {
+        throw new Error("You must be logged in to save playlists");
+      }
+      console.log('Making save playlist request with token...');
       const res = await apiRequest("POST", "/api/playlists", playlist);
-      return await res.json();
+      const result = await res.json();
+      console.log('Save playlist response:', result);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/playlists"] });
@@ -71,6 +146,7 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
       });
     },
     onError: (error: Error) => {
+      console.error('Save playlist error:', error);
       toast({
         title: "Failed to save playlist",
         description: error.message,
@@ -101,9 +177,7 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
       </div>
 
       <form
-        onSubmit={form.handleSubmit((data) =>
-          recommendationMutation.mutate({ ...data, type })
-        )}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="space-y-4"
       >
         <Input
@@ -113,18 +187,32 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
         <Button
           type="submit"
           className="w-full"
-          disabled={recommendationMutation.isPending}
+          disabled={recommendationMutation.isPending || (!user && hasUsedFreeTrial)}
         >
-          {recommendationMutation.isPending && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          {recommendationMutation.isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Getting Recommendations...
+            </>
+          ) : !user && hasUsedFreeTrial ? (
+            "Sign in to Get More Recommendations"
+          ) : !user ? (
+            "Try for Free"
+          ) : (
+            "Get Recommendations"
           )}
-          Get Recommendations
         </Button>
       </form>
 
+      {!user && !hasUsedFreeTrial && (
+        <p className="text-sm text-muted-foreground text-center">
+          Try one free recommendation! Sign in to unlock unlimited recommendations.
+        </p>
+      )}
+
       {recommendationMutation.data?.recommendations && (
         <div className="space-y-4">
-          {recommendationMutation.data.recommendations.map((rec, index) => (
+          {recommendationMutation.data.recommendations.map((rec: Recommendation, index: number) => (
             <Card key={index}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
@@ -158,7 +246,7 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
 
                 {rec.genres && (
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {rec.genres.map((genre) => (
+                    {rec.genres.map((genre: string) => (
                       <Badge key={genre} variant="secondary">
                         {genre}
                       </Badge>

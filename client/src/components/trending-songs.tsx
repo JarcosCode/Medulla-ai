@@ -4,9 +4,38 @@ import { Button } from "@/components/ui/button";
 import { PlayCircle, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
+interface TrendingVideo {
+  id: string;
+  title: string;
+  channelTitle: string;
+  url: string;
+}
+
+interface TrendingData {
+  [category: string]: TrendingVideo;
+}
+
 export default function TrendingSongs() {
-  const { data: trending, isLoading, error } = useQuery({
-    queryKey: ["/api/trending"],
+  const { data: trending, isLoading, error } = useQuery<TrendingData>({
+    queryKey: ["trending"],
+    queryFn: async () => {
+      const response = await fetch('/api/trending');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    },
+    retry: 1
+  });
+
+  // Log component state for debugging
+  console.log("Trending component state:", { 
+    isLoading, 
+    error: error ? {
+      message: error.message,
+      stack: error.stack
+    } : null, 
+    hasData: !!trending 
   });
 
   if (isLoading) {
@@ -15,8 +44,9 @@ export default function TrendingSongs() {
         <CardHeader>
           <CardTitle>Trending on YouTube</CardTitle>
         </CardHeader>
-        <CardContent className="flex justify-center p-8">
+        <CardContent className="flex flex-col items-center justify-center p-8 space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading trending videos...</p>
         </CardContent>
       </Card>
     );
@@ -30,6 +60,20 @@ export default function TrendingSongs() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">Failed to load trending songs.</p>
+          <p className="text-xs text-red-500 mt-2">Error: {error.message}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!trending || Object.keys(trending).length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Trending on YouTube</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">No trending videos available.</p>
         </CardContent>
       </Card>
     );
@@ -41,7 +85,7 @@ export default function TrendingSongs() {
         <CardTitle>Trending on YouTube</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {Object.entries(trending || {}).map(([category, video]) => (
+        {Object.entries(trending).map(([category, video]) => (
           <div
             key={video.id}
             className="flex items-start gap-4 p-4 rounded-lg bg-muted/50"
