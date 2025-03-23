@@ -178,6 +178,25 @@ export default function RecommendationForm({ limits }: RecommendationFormProps) 
         </Button>
       </div>
 
+      {user && limits && (
+        <div className="flex justify-between items-center text-sm text-muted-foreground">
+          <div>
+            Songs remaining today: {5 - limits.songRecsCount}
+          </div>
+          <div>
+            Playlists remaining today: {3 - limits.playlistRecsCount}
+          </div>
+        </div>
+      )}
+
+      {user && limits && (
+        (limits.songRecsCount >= 4 || limits.playlistRecsCount >= 2) && (
+          <div className="text-sm text-yellow-600 bg-yellow-50 p-3 rounded-md">
+            You're approaching your daily limit. Create an account to get unlimited recommendations!
+          </div>
+        )
+      )}
+
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         className="space-y-4"
