@@ -6,11 +6,27 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { BookmarkIcon } from "lucide-react";
 
+interface DailyLimits {
+  songRecsCount: number;
+  playlistRecsCount: number;
+}
+
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
 
-  const { data: limits } = useQuery({
+  const { data: limits } = useQuery<DailyLimits>({
     queryKey: ["/api/daily-limits"],
+    queryFn: async () => {
+      const response = await fetch("/api/daily-limits", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch daily limits");
+      }
+      return response.json();
+    },
   });
 
   return (

@@ -72,24 +72,44 @@ export async function getTrendingVideos(): Promise<Record<string, YouTubeVideo>>
   }
 
   const API_KEY = process.env.YOUTUBE_API_KEY;
-  console.log('Fetching trending videos with API key:', API_KEY ? 'Present' : 'Missing');
+  console.log('YouTube API Key status:', {
+    exists: !!API_KEY,
+    length: API_KEY?.length,
+    firstChar: API_KEY ? API_KEY[0] : 'none'
+  });
 
   try {
     console.log('Fetching fresh trending videos from YouTube API');
     const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,status&chart=mostPopular&videoCategoryId=10&maxResults=3&regionCode=US&key=${API_KEY}`;
-    console.log('Making YouTube API request to:', url);
+    
+    // Log the URL with a redacted API key for debugging
+    console.log('Making YouTube API request to:', url.replace(API_KEY || '', 'REDACTED'));
 
     const response = await fetch(url);
-    console.log('YouTube API response status:', response.status);
+    console.log('YouTube API response:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('YouTube API error response:', errorText);
-      throw new Error(`YouTube API error: ${response.statusText}`);
+      console.error('YouTube API error details:', {
+        status: response.status,
+        statusText: response.statusText,
+        errorText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+      throw new Error(`YouTube API error: ${response.statusText} - ${errorText}`);
     }
 
     const data = await response.json();
-    console.log('YouTube API response data:', JSON.stringify(data, null, 2));
+    console.log('YouTube API response data structure:', {
+      hasItems: !!data.items,
+      itemCount: data.items?.length,
+      firstItemId: data.items?.[0]?.id,
+      error: data.error
+    });
 
     const results: Record<string, YouTubeVideo> = {};
 

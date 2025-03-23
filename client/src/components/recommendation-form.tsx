@@ -26,12 +26,14 @@ interface RecommendationResponse {
   recommendations: Recommendation[];
 }
 
-type RecommendationFormProps = {
-  limits?: {
-    songRecsCount: number;
-    playlistRecsCount: number;
-  };
-};
+interface DailyLimits {
+  songRecsCount: number;
+  playlistRecsCount: number;
+}
+
+interface RecommendationFormProps {
+  limits?: DailyLimits;
+}
 
 function isValidUrl(url: string | undefined): boolean {
   if (!url) return false;

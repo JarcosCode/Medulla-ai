@@ -25,11 +25,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/trending", async (_req, res) => {
     try {
+      console.log("Starting trending videos request");
       const trending = await getTrendingVideos();
+      console.log("Trending videos response:", {
+        success: true,
+        videoCount: Object.keys(trending).length,
+        categories: Object.keys(trending)
+      });
       res.json(trending);
     } catch (error: any) {
-      console.error("Error fetching trending videos:", error);
-      res.status(500).json({ message: error.message });
+      console.error("Error fetching trending videos:", {
+        error: error.message,
+        stack: error.stack,
+        name: error.name,
+        cause: error.cause
+      });
+      res.status(500).json({ 
+        message: "Failed to fetch trending videos",
+        error: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   });
 
