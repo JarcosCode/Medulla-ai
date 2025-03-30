@@ -96,14 +96,56 @@ export default function AuthPage() {
         </Card>
       </div>
 
-      <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5 p-8">
-        <div className="max-w-md text-center">
-          <Music2 className="mx-auto h-16 w-16 text-primary mb-4" />
-          <h2 className="text-2xl font-bold mb-4">Get Personalized Music Recommendations</h2>
-          <p className="text-muted-foreground">
+      <div className="hidden md:flex items-center justify-center bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 relative overflow-hidden p-8">
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-pink-500/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-64 h-64 bg-indigo-500/10 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div className="relative max-w-md text-center px-8 py-12 backdrop-blur-sm rounded-2xl border border-white/10 bg-white/5">
+          {/* Decorative Music Vector Art */}
+          <div className="mb-8 relative">
+            <svg
+              viewBox="0 0 24 24"
+              className="w-48 h-48 mx-auto text-indigo-400/80"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+            >
+              <g>
+                {/* Musical Note Group */}
+                <path d="M9 18V5l12-2v13" strokeLinecap="round" strokeLinejoin="round" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="21" cy="16" r="3" />
+                
+                {/* Decorative Sound Waves */}
+                <path className="text-pink-400/60" d="M3 10.5c2-2 4-2 6 0" strokeLinecap="round" />
+                <path className="text-purple-400/60" d="M3 7.5c3-3 6-3 9 0" strokeLinecap="round" />
+                <path className="text-indigo-400/60" d="M3 4.5c4-4 8-4 12 0" strokeLinecap="round" />
+              </g>
+            </svg>
+            
+            {/* Additional Floating Music Symbols */}
+            <svg className="absolute top-0 right-0 w-12 h-12 text-pink-400/20" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <svg className="absolute bottom-0 left-0 w-10 h-10 text-indigo-400/20" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 17H5v-2h4v2zm10-2h-4v2h4v-2zm-6 2h-2v-2h2v2zm6-9v2h-4V8h4zm-6 0v2h-2V8h2zm-4 0v2H5V8h4z"/>
+            </svg>
+          </div>
+          
+          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
+            Get Personalized Music Recommendations
+          </h2>
+          
+          <p className="text-lg text-white/80 leading-relaxed">
             Create an account to unlock unlimited music recommendations powered by AI. Discover new songs
             and playlists tailored to your taste.
           </p>
+
+          {/* Bottom decorative wave */}
+          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500/40 via-purple-500/40 to-pink-500/40"></div>
         </div>
       </div>
     </div>
